@@ -1,0 +1,125 @@
+SW23#sh run
+Building configuration...
+
+Current configuration : 1789 bytes
+!
+! Last configuration change at 16:24:16 UTC Fri Oct 16 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname SW23
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+no ip domain-lookup
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ description SW23-to-R8
+ no switchport
+ ip address 10.8.23.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf 10 area 218
+!
+interface Ethernet0/1
+ description SW23-to-SW21
+ no switchport
+ ip address 10.21.23.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf 10 area 218
+!
+interface Ethernet0/2
+!
+interface Ethernet0/3
+!
+interface Ethernet1/0
+ description SW23-to-SW22
+ no switchport
+ ip address 10.22.23.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf 10 area 218
+!
+interface Ethernet1/1
+!
+interface Ethernet1/2
+!
+interface Ethernet1/3
+!
+router ospf 10
+ router-id 23.23.23.23
+ passive-interface default
+ no passive-interface Ethernet0/0
+ no passive-interface Ethernet0/1
+ no passive-interface Ethernet1/0
+!
+ip forward-protocol nd
+!
+ip tcp synwait-time 5
+ip http server
+ip http secure-server
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+!
+end
+

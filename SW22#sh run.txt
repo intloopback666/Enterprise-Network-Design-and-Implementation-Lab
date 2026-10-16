@@ -1,0 +1,156 @@
+SW22#sh run
+Building configuration...
+
+Current configuration : 2529 bytes
+!
+! Last configuration change at 16:24:33 UTC Fri Oct 16 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname SW22
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+no ip domain-lookup
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree portfast edge default
+spanning-tree portfast edge bpduguard default
+spanning-tree extend system-id
+spanning-tree vlan 50,60,200,221 priority 28672
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel30
+ switchport trunk allowed vlan 50,60,200,221
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Ethernet0/0
+ switchport access vlan 200
+ switchport mode access
+!
+interface Ethernet0/1
+ switchport access vlan 60
+ switchport mode access
+ switchport voice vlan 60
+!
+interface Ethernet0/2
+ switchport access vlan 50
+ switchport mode access
+!
+interface Ethernet0/3
+!
+interface Ethernet1/0
+ no switchport
+ ip address 10.22.23.1 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf 10 area 218
+!
+interface Ethernet1/1
+ switchport trunk allowed vlan 50,60,200,221
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 30 mode desirable
+!
+interface Ethernet1/2
+ switchport trunk allowed vlan 50,60,200,221
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 30 mode desirable
+!
+interface Ethernet1/3
+!
+interface Vlan50
+ ip address 172.16.0.115 255.255.255.240
+ standby 50 ip 172.16.0.113
+ standby 50 preempt
+ shutdown
+!
+interface Vlan60
+ ip address 172.16.0.131 255.255.255.192
+ standby 60 ip 172.16.0.129
+ standby 60 preempt
+ shutdown
+!
+interface Vlan200
+ ip address 172.16.0.67 255.255.255.240
+ standby 200 ip 172.16.0.65
+ standby 200 preempt
+ shutdown
+!
+interface Vlan221
+ ip address 172.16.0.83 255.255.255.240
+ standby 221 ip 172.16.0.81
+ standby 221 preempt
+ shutdown
+!
+router ospf 10
+ router-id 22.22.22.22
+ passive-interface default
+ no passive-interface Ethernet1/0
+!
+ip forward-protocol nd
+!
+ip tcp synwait-time 5
+ip http server
+ip http secure-server
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+!
+end

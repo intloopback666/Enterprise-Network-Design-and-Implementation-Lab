@@ -1,0 +1,161 @@
+SW13#sh run
+Building configuration...
+
+Current configuration : 2696 bytes
+!
+! Last configuration change at 16:23:53 UTC Fri Oct 16 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname SW13
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+no ip domain-lookup
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree portfast edge default
+spanning-tree portfast edge bpduguard default
+spanning-tree extend system-id
+spanning-tree vlan 50,100,150,999 priority 24576
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel20
+ description LACP-to-SW14
+ switchport trunk allowed vlan 50,100,150,999
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Ethernet0/0
+ description SW13-to-R1
+ no switchport
+ ip address 10.1.13.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ ipv6 address 2001:DB8:1:13::2/64
+!
+interface Ethernet0/1
+!
+interface Ethernet0/2
+ switchport access vlan 150
+ switchport mode access
+!
+interface Ethernet0/3
+ switchport access vlan 150
+ switchport mode access
+!
+interface Ethernet1/0
+ switchport access vlan 150
+ switchport mode access
+!
+interface Ethernet1/1
+ switchport access vlan 150
+ switchport mode access
+!
+interface Ethernet1/2
+ switchport trunk allowed vlan 50,100,150,999
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 20 mode active
+!
+interface Ethernet1/3
+ switchport trunk allowed vlan 50,100,150,999
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 20 mode active
+!
+interface Vlan50
+ ip address 172.16.0.114 255.255.255.240
+ standby 50 ip 172.16.0.113
+ standby 50 priority 110
+ standby 50 preempt
+ shutdown
+!
+interface Vlan100
+ ip address 172.16.0.34 255.255.255.224
+ standby 100 ip 172.16.0.33
+ standby 100 priority 110
+ standby 100 preempt
+ shutdown
+!
+interface Vlan150
+ ip address 172.16.0.2 255.255.255.224
+ standby 150 ip 172.16.0.1
+ standby 150 priority 110
+ standby 150 preempt
+ shutdown
+ ipv6 address 2001:DB8:150::2/64
+!
+router ospf 10
+ router-id 13.13.13.13
+ passive-interface default
+ no passive-interface Ethernet0/0
+!
+ip forward-protocol nd
+!
+ip tcp synwait-time 5
+ip http server
+ip http secure-server
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+!
+end

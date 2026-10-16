@@ -1,0 +1,164 @@
+DIST-SW-1#sh run
+Building configuration...
+
+Current configuration : 2660 bytes
+!
+! Last configuration change at 16:24:29 UTC Fri Oct 16 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname DIST-SW-1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+no ip domain-lookup
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree portfast edge default
+spanning-tree portfast edge bpduguard default
+spanning-tree extend system-id
+spanning-tree vlan 301-303 priority 24576
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel10
+ switchport trunk allowed vlan 301-303
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Ethernet0/0
+ no switchport
+ ip address 10.9.1.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf 10 area 39
+!
+interface Ethernet0/1
+!
+interface Ethernet0/2
+ switchport trunk allowed vlan 301-303
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 10 mode active
+!
+interface Ethernet0/3
+ switchport trunk allowed vlan 301-303
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 10 mode active
+!
+interface Ethernet1/0
+ switchport trunk allowed vlan 301-303
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Ethernet1/1
+ switchport trunk allowed vlan 301-303
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Ethernet1/2
+ switchport trunk allowed vlan 301-303
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface Ethernet1/3
+!
+interface Ethernet2/0
+!
+interface Ethernet2/1
+!
+interface Ethernet2/2
+!
+interface Ethernet2/3
+!
+interface Vlan301
+ ip address 172.16.0.194 255.255.255.192
+ standby 1 ip 172.16.0.193
+ standby 1 priority 110
+ standby 1 preempt
+ shutdown
+!
+interface Vlan302
+ ip address 172.16.1.2 255.255.255.192
+ standby 2 ip 172.16.1.1
+ standby 2 priority 110
+ standby 2 preempt
+ shutdown
+!
+interface Vlan303
+ ip address 172.16.1.66 255.255.255.192
+ standby 3 ip 172.16.1.65
+ standby 3 priority 110
+ standby 3 preempt
+ shutdown
+!
+router ospf 10
+ router-id 31.31.31.31
+ passive-interface default
+ no passive-interface Ethernet0/0
+!
+ip forward-protocol nd
+!
+ip tcp synwait-time 5
+ip http server
+ip http secure-server
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+!
+end
+

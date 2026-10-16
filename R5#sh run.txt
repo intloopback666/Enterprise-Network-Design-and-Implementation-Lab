@@ -1,0 +1,190 @@
+R5#sh run
+Building configuration...
+
+Current configuration : 2622 bytes
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R5
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+redundancy
+!
+no cdp log mismatch duplex
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 5.5.5.5 255.255.255.255
+ ip ospf 10 area 0
+!
+interface Ethernet0/0
+ no ip address
+ duplex auto
+!
+interface Ethernet0/1
+ no ip address
+ duplex auto
+!
+interface Ethernet0/2
+ no ip address
+ duplex auto
+!
+interface Ethernet0/3
+ no ip address
+ duplex auto
+!
+interface Serial1/0
+ description R5-to-ISP1-Primary
+ ip address 10.5.101.1 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly in
+ ipv6 address 2001:DB8:5:101::1/64
+ serial restart-delay 0
+!
+interface Serial1/1
+ description R5-to-ISP2-Backup
+ ip address 10.5.102.1 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly in
+ ipv6 address 2001:DB8:5:102::1/64
+ serial restart-delay 0
+!
+interface Serial1/2
+ description R5-to-R4-Area0
+ ip address 10.4.5.2 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ serial restart-delay 0
+!
+interface Serial1/3
+ description R5-to-R8-Area0
+ ip address 10.5.8.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ serial restart-delay 0
+!
+router ospf 10
+ router-id 5.5.5.5
+ passive-interface default
+ no passive-interface Serial1/2
+ no passive-interface Serial1/3
+ default-information originate metric 10 metric-type 1
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip nat inside source list NAT-INSIDE interface Serial1/0 overload
+ip route 0.0.0.0 0.0.0.0 10.5.101.2
+ip route 0.0.0.0 0.0.0.0 10.5.102.2 200
+!
+ip access-list standard NAT-INSIDE
+ permit 172.16.0.0 0.0.255.255
+!
+ipv6 route ::/0 2001:DB8:5:101::2
+ipv6 route ::/0 2001:DB8:5:102::2 200
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+ transport input none
+!
+!
+end
+

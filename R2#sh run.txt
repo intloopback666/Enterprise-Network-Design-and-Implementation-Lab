@@ -1,0 +1,184 @@
+R2#sh run
+Building configuration...
+
+Current configuration : 2511 bytes
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name corp.local
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username netadmin privilege 15 secret 5 $1$X8UZ$bhEJBEavIdoiaWMJrmr8Z.
+!
+redundancy
+!
+no cdp log mismatch duplex
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+ ip ospf 10 area 0
+!
+interface Ethernet0/0
+ no ip address
+ duplex auto
+!
+interface Ethernet0/1
+ no ip address
+ duplex auto
+!
+interface Ethernet0/2
+ no ip address
+ duplex auto
+!
+interface Ethernet0/3
+ no ip address
+ duplex auto
+!
+interface Serial1/0
+ description R2-to-R1-Area0
+ ip address 10.1.2.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ serial restart-delay 0
+!
+interface Serial1/1
+ description R2-to-R4-Area0
+ ip address 10.2.4.1 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ serial restart-delay 0
+!
+interface Serial1/2
+ description R2-to-R12-Area112
+ ip address 10.2.12.1 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf 10 area 112
+ serial restart-delay 0
+!
+interface Serial1/3
+ description R2-to-R11-Area112
+ ip address 10.2.11.1 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf 10 area 112
+ serial restart-delay 0
+!
+router ospf 10
+ router-id 2.2.2.2
+ passive-interface default
+ no passive-interface Serial1/0
+ no passive-interface Serial1/1
+ no passive-interface Serial1/2
+ no passive-interface Serial1/3
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip ssh version 2
+!
+ip access-list standard SSH-IT-ONLY
+ permit 172.16.0.32 0.0.0.31
+!
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class SSH-IT-ONLY in
+ login local
+ transport input ssh
+!
+!
+end

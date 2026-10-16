@@ -1,0 +1,180 @@
+R10#sh run
+Building configuration...
+
+Current configuration : 2273 bytes
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+ip dhcp excluded-address 172.16.0.97 172.16.0.101
+!
+ip dhcp pool VLAN75-SHOP1
+ network 172.16.0.96 255.255.255.240
+ default-router 172.16.0.97
+ dns-server 172.16.3.251
+ domain-name corp.local
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 10.10.10.10 255.255.255.255
+ ip ospf 10 area 108
+!
+interface Ethernet0/0
+ no ip address
+ duplex auto
+!
+interface Ethernet0/0.75
+ description VLAN75-Shop1-Gateway
+ encapsulation dot1Q 75
+ ip address 172.16.0.97 255.255.255.240
+ ip access-group USER-POLICY in
+!
+interface Ethernet0/1
+ no ip address
+ shutdown
+ duplex auto
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+ duplex auto
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+ duplex auto
+!
+interface Serial1/0
+ description R10-to-R8-Area108
+ ip address 10.8.10.2 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf 10 area 108
+ serial restart-delay 0
+!
+interface Serial1/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+router ospf 10
+ router-id 10.10.10.10
+ passive-interface default
+ no passive-interface Serial1/0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list extended USER-POLICY
+ permit udp any eq bootpc any eq bootps
+ permit udp any host 172.16.3.251 eq domain
+ permit tcp any host 172.16.3.251 eq domain
+ permit tcp any host 172.16.3.250 eq 389
+ permit tcp any host 172.16.3.250 eq 445
+ permit tcp any 172.16.0.0 0.0.0.31 eq www
+ permit tcp any 172.16.0.0 0.0.0.31 eq 443
+ deny   ip any 172.16.0.0 0.0.255.255
+ permit ip any any
+!
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+!
+end

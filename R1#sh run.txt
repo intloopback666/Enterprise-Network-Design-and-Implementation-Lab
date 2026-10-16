@@ -1,0 +1,196 @@
+R1#sh run
+Building configuration...
+
+Current configuration : 2817 bytes
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name corp.local
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username netadmin privilege 15 secret 5 $1$CnQ8$EvCdcnujeGNiufp5MLCrd0
+!
+redundancy
+!
+no cdp log mismatch duplex
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+ ip ospf 10 area 0
+ ipv6 address 2001:DB8:1::1/128
+!
+interface Ethernet0/0
+ description R1-to-SW13-Area0
+ ip address 10.1.13.1 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ duplex auto
+ ipv6 address 2001:DB8:1:13::1/64
+!
+interface Ethernet0/1
+ description R1-to-SW14-Area0
+ ip address 10.1.14.1 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ duplex auto
+ ipv6 address 2001:DB8:1:14::1/64
+!
+interface Ethernet0/2
+ no ip address
+ duplex auto
+!
+interface Ethernet0/3
+ no ip address
+ duplex auto
+!
+interface Serial1/0
+ description R1-to-R2-Area0
+ ip address 10.1.2.1 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ ipv6 address 2001:DB8:1:2::1/64
+ serial restart-delay 0
+!
+interface Serial1/1
+ description R1-to-R3-Area0
+ ip address 10.1.3.1 255.255.255.252
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CCNP123
+ ip ospf dead-interval 20
+ ip ospf hello-interval 5
+ ip ospf 10 area 0
+ ipv6 address 2001:DB8:1:3::1/64
+ serial restart-delay 0
+!
+interface Serial1/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial1/3
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+router ospf 10
+ router-id 1.1.1.1
+ passive-interface default
+ no passive-interface Ethernet0/0
+ no passive-interface Ethernet0/1
+ no passive-interface Serial1/0
+ no passive-interface Serial1/1
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip ssh version 2
+!
+ip access-list standard SSH-IT-ONLY
+ permit 172.16.0.32 0.0.0.31
+!
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class SSH-IT-ONLY in
+ login local
+ transport input ssh
+!
+!
+end
